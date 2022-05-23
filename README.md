@@ -9,7 +9,7 @@ raiplay-dl - the most advanced raiplay.it downloader
   - [Example usage](#example-usage)
   - [Some things to keep in mind](#some-things-to-keep-in-mind)
 - [Problems and limitations](#problems-and-limitations)
-- [TODO](#todo)
+- [Donations](#donations)
 
 ## Installation
 
@@ -17,7 +17,7 @@ raiplay-dl - the most advanced raiplay.it downloader
 
 ## Description
 
-**raiplay-dl** is a command-line program to download videos from raiplay.com. It requires the Python interpreter, version 3.4+, and it is not platform specific. It is released to the public domain, which means you can modify it, redistribute it or use it however you like.
+**raiplay-dl** is a command-line program to download videos from raiplay.com. It requires the Python interpreter, version 3.4+, and it is not platform specific.
 
 This documentation and the args syntax take ispiration from [youtube-dl](https://github.com/ytdl-org/youtube-dl).
 The script is inspired by [raiplay-dl](https://github.com/leoncvlt/raiplay-dl) by [leoncvlt](https://github.com/leoncvlt), but is a complete rewrite.
@@ -122,3 +122,9 @@ Downloading "Don Matteo - 09x03 - Testimone d'accusa (2014) [414p]"
 - All the RaiPlay contents are georestricted to Italy (a proxy should be able to bypass)
 - A few movies/series are DRM protected, this script **can't bypass DRM protection**.
 - The metadata system in RaiPlay is so shitty that you need to make different functions to parse metadata for each media type (movies, tv series, tv programs and kids), and in some cases there are differences even between same media type. This makes it difficult for the script to automatically divide for example the seasons or to distinguish if the url given in input is a series or a movie, so in *some rare cases* there could be errors in the naming of the files or in the download. Please report these errors and I will try to fix them.
+
+## Donations
+
+If you appreciate my work and if you can afford it, it would be great if you could give me a small donation!
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/wetcork)
