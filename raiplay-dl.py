@@ -144,7 +144,12 @@ def convert_size(size_bytes): # Covert file size from bytes to the beast readabl
     s = round(size_bytes / p, 2)
     return '%s %s' % (s, size_name[i])
 
-def path_and_down(url, out_dir, file_name, file_path): # Check output file path and start the download
+def path_and_down(url, out_dir, file_name): # Check output file path and start the download
+    
+    out_dir = out_dir[2:].replace(':', ' -')
+    file_name = file_name.replace('/', '_').replace(':', ' -')
+    file_path = os.path.join(out_dir, file_name)
+    
     if debug:
         print('[debug] Checking PATH')
         print('[debug] ' + out_dir)
@@ -173,10 +178,8 @@ def pre_download(data, format, out_dir): # Get all the infos to start the downlo
     url = get_override_url(data, format)
     definition = get_definition(url[url.find('-') + 1:])
     file_name = '%s (%s) [%s].mp4' % (title.strip(), year, definition)
-    file_path = os.path.join(out_dir, file_name.replace('/', '_'))
     
-    
-    path_and_down(url, out_dir, file_name, file_path)
+    path_and_down(url, out_dir, file_name)
 
 def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get all the infos to start the download
     if debug: print('[debug] Starting PRE-DOWNLOAD SERIE\n')
@@ -192,9 +195,8 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
         url = get_override_url(data, format)
         definition = get_definition(url[url.find('-') + 1:])
         file_name = '%s - %sx%s - %s (%s) [%s].mp4' % (serie, season.zfill(2), episode.zfill(2), episode_title.strip(), year, definition)
-        file_path = os.path.join(out_dir, file_name.replace('/', '_'))
         
-        path_and_down(url, out_dir, file_name, file_path)
+        path_and_down(url, out_dir, file_name)
     elif 'Page' in data['id']:
         def_seasons = [x.strip() for x in def_seasons.split(',')]
         def_episodes = [x.strip() for x in def_episodes.split(',')]
@@ -254,9 +256,8 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
                                             url = get_override_url(get_json(url_root + season_data['items'][episode]['weblink']), format)
                                             definition = get_definition(url[url.find('-') + 1:])
                                             file_name = '%s - %sx%s - %s [%s].mp4' % (fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
-                                            file_path = os.path.join(out_sub_dir, file_name.replace('/', '_'))
                                             
-                                            path_and_down(url, out_sub_dir, file_name, file_path)
+                                            path_and_down(url, out_sub_dir, file_name)
                             else:   
                                 if debug:
                                     print('\n[debug] Getting ALL EPISODES')
@@ -268,9 +269,8 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
                                     url = get_override_url(get_json(url_root + season_data['items'][episode]['weblink']), format)
                                     definition = get_definition(url[url.find('-') + 1:])
                                     file_name = '%s - %sx%s - %s [%s].mp4' % (fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
-                                    file_path = os.path.join(out_sub_dir, file_name.replace('/', '_'))
                                     
-                                    path_and_down(url, out_sub_dir, file_name, file_path)
+                                    path_and_down(url, out_sub_dir, file_name)
                             print()
 
 def list_formats(data): # List the formats
