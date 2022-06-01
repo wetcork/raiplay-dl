@@ -146,8 +146,8 @@ def convert_size(size_bytes): # Covert file size from bytes to the beast readabl
 
 def path_and_down(url, out_dir, file_name): # Check output file path and start the download
     
-    out_dir = out_dir[2:].replace(':', ' -')
-    file_name = file_name.replace('/', '_').replace(':', ' -')
+    out_dir = out_dir[2:].replace(':', ' -').replace('<', ' ').replace('>', '<').replace('|', '').replace('*', '').replace('?', '').replace('"', '')
+    file_name = file_name.replace(':', ' -').replace('<', ' ').replace('>', '<').replace('|', '').replace('*', '').replace('?', '').replace('"', '').replace('/', '_').replace('\\', '_')
     file_path = os.path.join(out_dir, file_name)
     
     if debug:
