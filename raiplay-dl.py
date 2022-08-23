@@ -1,5 +1,5 @@
 # Created by WetCork
-# Version 1.0 - May 2022
+# Version 1.0.1 - August 2022
 # https://github.com/wetcork/raiplay-dl
 
 import argparse
@@ -206,7 +206,7 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
         print('Downloading "%s (%s)"\n' % (fn_serie.strip(), fn_year))
         
         for block in range(len(data['blocks'])):
-            if 'Episodi' in data['blocks'][block]['name'] or 'Puntate' in data['blocks'][block]['name']:
+            if 'Episodi' == data['blocks'][block]['name'] or 'Puntate' == data['blocks'][block]['name']:
                         seasons = []
 
                         if debug: print('[debug] Sorting SEASONS')
@@ -322,7 +322,7 @@ def list_formats_serie(data, def_seasons, def_episodes): # List the formats
             print('Formats avaiable for "%s (%s)"\n' % (fn_serie.strip(), fn_year))
             if debug: print('[debug] Getting SEASONS')
             for block in range(len(data['blocks'])):
-                if 'Episodi' in data['blocks'][block]['name'] or 'Puntate' in data['blocks'][block]['name']:
+                if 'Episodi' == data['blocks'][block]['name'] or 'Puntate' == data['blocks'][block]['name']:
                             seasons = []
                             if debug: print('[debug] Sorting SEASONS')
                             # This function stores the season name and the rispective json path
