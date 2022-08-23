@@ -61,7 +61,7 @@ Formats avaiable for "The Circle (2017)"
 1800 - 576p (1.53 GB)
 1200 - 414p (1.03 GB)
 ```
-You can filter seasons and episodes by using `-s` and `-p`
+You can filter seasons and episodes by using `-s` and `-e`
 ```text
 raiplay-dl.py -F https://www.raiplay.it/programmi/donmatteo -s 9 -e 3,4
 
