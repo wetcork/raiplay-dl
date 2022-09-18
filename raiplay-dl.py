@@ -9,15 +9,16 @@ import os
 import pathlib
 import sys
 import requests
-from natsort import natsorted,ns
+from natsort import natsorted, ns
 
 # GLOBAL SETTINGS #
 
-debug = False # Print debug output in the console
+debug = False  # Print debug output in the console
 url_root = 'https://www.raiplay.it'
 override = '&overrideUserAgentRule=mp4-'
 formats = ['5000', '3200', '2401', '2400', '1800', '1200', '800', '700', '400', '250']
 resolutions = ['1080p', '810p', '720p', '720p', '576p', '414p', '288p', '288p', '288p', '198p']
+
 
 # GLOBAL SETTINGS #
 
@@ -36,9 +37,10 @@ def main(args):
             else:
                 pre_download(data, args.format, args.out_dir)
 
-def check_url(url): # Checf in giver url is valid
+
+def check_url(url):  # Checf in giver url is valid
     if debug: print('[debug] Checking URL')
-    
+
     if url_root in url:
         try:
             if requests.get(url).status_code == 404:
@@ -50,12 +52,13 @@ def check_url(url): # Checf in giver url is valid
     else:
         sys.exit('[error] Invalid url')
 
-def check_drm(data): # Check if the content is DRM protected
+
+def check_drm(data):  # Check if the content is DRM protected
     if debug: print('[debug] Checking DRM')
-    
+
     if 'ContentItem' in data['id']:
         data = get_json(url_root + data['program_info']['path_id'])
-        
+
     try:
         if data['program_info']['rights_management']['rights']['drm']['VOD']:
             print('[drm error] "%s" is DRM protected.' % (data['name']))
@@ -64,9 +67,10 @@ def check_drm(data): # Check if the content is DRM protected
     else:
         sys.exit('[drm error] This script can\'t bypass DRM protection.')
 
-def get_json(url): # Input the RaiPlay url and output the associated JSON
+
+def get_json(url):  # Input the RaiPlay url and output the associated JSON
     if debug: print('[debug] Getting JSON')
-    
+
     url = url.rstrip('/')
     if url.endswith('.html'):
         url = url.replace('.html', '.json')
@@ -77,9 +81,10 @@ def get_json(url): # Input the RaiPlay url and output the associated JSON
     data = json.loads(requests.get(url).content)
     return data
 
-def is_serie(data): # Check if the media is a tv serie or a movie
+
+def is_serie(data):  # Check if the media is a tv serie or a movie
     if debug: print('[debug] Checking SERIE')
-    
+
     layout = data['program_info']['layout']
     if layout == 'single':
         return False
@@ -88,20 +93,21 @@ def is_serie(data): # Check if the media is a tv serie or a movie
     else:
         sys.exit('Error while defining serie.')
 
-def get_override_url(data, format): # Contruct the video url to bypass 720p limit
+
+def get_override_url(data, format):  # Contruct the video url to bypass 720p limit
     if debug:
         print('[debug] Getting OVERRIDE URL')
         print('[debug] ' + format)
-    
+
     url = data['video']['content_url']
     if format == 'best':
         for format in formats:
             url_override = url + override + format
-            
+
             if debug:
-                    print('[debug] Format ' + format)
-                    print('[debug] ' + url_override)
-            try:    
+                print('[debug] Format ' + format)
+                print('[debug] ' + url_override)
+            try:
                 if requests.get(url_override, stream=True).headers['Content-Type'] == 'video/mp4':
                     return url_override
             except:
@@ -109,33 +115,34 @@ def get_override_url(data, format): # Contruct the video url to bypass 720p limi
         print('[error] No format has been found for the given title')
     else:
         url_override = url + override + format
-        try:    
+        try:
             if requests.get(url_override, stream=True).headers['Content-Type'] == 'video/mp4':
                 return url_override
             else:
-                #print('[info] Selected format is not avaiable, fallback to the best avaible format')
+                # print('[info] Selected format is not avaiable, fallback to the best avaible format')
                 for format in formats:
                     url_override = url + override + format
-                    
+
                     if debug:
-                            print('[debug] Format ' + format)
-                            print('[debug] ' + url_override)
-                            
+                        print('[debug] Format ' + format)
+                        print('[debug] ' + url_override)
+
                     if requests.get(url_override, stream=True).headers['Content-Type'] == 'video/mp4':
-                        return url_override 
+                        return url_override
         except:
             sys.exit('[error] Connection error or the title has Verimatrix DRM protection.')
-        
 
-def get_definition(format): # Retrive the video quality
+
+def get_definition(format):  # Retrive the video quality
     if debug: print('[debug] Getting DEFINITION')
-    
+
     for bit in range(len(formats)):
         if formats[bit] == format:
             if debug: print('[debug] ' + resolutions[bit])
             return resolutions[bit]
 
-def convert_size(size_bytes): # Covert file size from bytes to the beast readable option
+
+def convert_size(size_bytes):  # Covert file size from bytes to the beast readable option
     if size_bytes == 0:
         return '0B'
     size_name = ('B', 'KB', 'MB', 'GB')
@@ -144,49 +151,55 @@ def convert_size(size_bytes): # Covert file size from bytes to the beast readabl
     s = round(size_bytes / p, 2)
     return '%s %s' % (s, size_name[i])
 
-def path_and_down(url, out_dir, file_name): # Check output file path and start the download
-    
-    out_dir = out_dir[2:].replace(':', ' -').replace('<', ' ').replace('>', '<').replace('|', '').replace('*', '').replace('?', '').replace('"', '')
-    file_name = file_name.replace(':', ' -').replace('<', ' ').replace('>', '<').replace('|', '').replace('*', '').replace('?', '').replace('"', '').replace('/', '_').replace('\\', '_')
+
+def path_and_down(url, out_dir, file_name):  # Check output file path and start the download
+
+    out_dir = out_dir[2:].replace(':', ' -').replace('<', ' ').replace('>', '<').replace('|', '').replace('*',
+                                                                                                          '').replace(
+        '?', '').replace('"', '')
+    file_name = file_name.replace(':', ' -').replace('<', ' ').replace('>', '<').replace('|', '').replace('*',
+                                                                                                          '').replace(
+        '?', '').replace('"', '').replace('/', '_').replace('\\', '_')
     file_path = os.path.join(out_dir, file_name)
-    
+
     if debug:
         print('[debug] Checking PATH')
         print('[debug] ' + out_dir)
         print('[debug] ' + file_name)
         print()
-    
-    
+
     if not os.path.isfile(file_path):
-            if not os.path.isdir(out_dir):
-                os.makedirs(out_dir)
-            print('Downloading "%s"' % (file_name.strip('.mp4')))
-            download(url, file_path)
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+        print('Downloading "%s"' % (file_name.strip('.mp4')))
+        download(url, file_path)
     else:
         print('%s has already been downloaded' % file_name)
         if debug: print()
 
-def pre_download(data, format, out_dir): # Get all the infos to start the download
+
+def pre_download(data, format, out_dir):  # Get all the infos to start the download
     if debug: print('[debug] Starting PRE-DOWNLOAD')
-    
+
     if 'Page' in data['id']:
         data = get_json(url_root + data['first_item_path'])
-        
+
     if debug: print('[debug] Defining METADATA')
     title = data['program_info']['name']
     year = data['program_info']['year']
     url = get_override_url(data, format)
     definition = get_definition(url[url.find('-') + 1:])
     file_name = '%s (%s) [%s].mp4' % (title.strip(), year, definition)
-    
+
     path_and_down(url, out_dir, file_name)
 
-def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get all the infos to start the download
+
+def pre_download_serie(data, def_seasons, def_episodes, format, out_dir):  # Get all the infos to start the download
     if debug: print('[debug] Starting PRE-DOWNLOAD SERIE\n')
 
     if 'ContentItem' in data['id']:
         if debug: print('[debug] Defining METADATA')
-        
+
         serie = data['program_info']['name']
         season = data['season']
         episode = data['episode']
@@ -194,90 +207,101 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
         year = data['track_info']['edit_year']
         url = get_override_url(data, format)
         definition = get_definition(url[url.find('-') + 1:])
-        file_name = '%s - %sx%s - %s (%s) [%s].mp4' % (serie, season.zfill(2), episode.zfill(2), episode_title.strip(), year, definition)
-        
+        file_name = '%s - %sx%s - %s (%s) [%s].mp4' % (
+        serie, season.zfill(2), episode.zfill(2), episode_title.strip(), year, definition)
+
         path_and_down(url, out_dir, file_name)
     elif 'Page' in data['id']:
         def_seasons = [x.strip() for x in def_seasons.split(',')]
         def_episodes = [x.strip() for x in def_episodes.split(',')]
-        
+
         fn_serie = data['name']
         fn_year = data['program_info']['year']
         print('Downloading "%s (%s)"\n' % (fn_serie.strip(), fn_year))
-        
+
         for block in range(len(data['blocks'])):
             if 'Episodi' == data['blocks'][block]['name'] or 'Puntate' == data['blocks'][block]['name']:
-                        seasons = []
+                seasons = []
 
-                        if debug: print('[debug] Sorting SEASONS')
-                        # This function stores the season name and the rispective json path
-                        # in one array, separated by a custom word, then natsort the season
-                        # for a better output in the console (it was to difficult to organize things for RAI)
-                        for season in range(len(data['blocks'][block]['sets'])):
-                            seasons.append(data['blocks'][block]['sets'][season]['name'] + '_SEP_' + data['blocks'][block]['sets'][season]['path_id'])
-                        seasons = natsorted(seasons, alg=ns.IGNORECASE)
+                if debug: print('[debug] Sorting SEASONS')
+                # This function stores the season name and the rispective json path
+                # in one array, separated by a custom word, then natsort the season
+                # for a better output in the console (it was to difficult to organize things for RAI)
+                for season in range(len(data['blocks'][block]['sets'])):
+                    seasons.append(
+                        data['blocks'][block]['sets'][season]['name'] + '_SEP_' + data['blocks'][block]['sets'][season][
+                            'path_id'])
+                seasons = natsorted(seasons, alg=ns.IGNORECASE)
 
-                        if debug: print('[debug] Getting custom SEASONS')
-                        if def_seasons[0] != 'all':
-                            temp = []
-                            for i in def_seasons:
-                                temp.append(seasons[int(i)-1])
-                            seasons = temp
-                        
-                        for sor_season in seasons:
-                            season_data = get_json(url_root + sor_season.split('_SEP_')[1])
-                            
-                            if debug: print('[debug] Defining seasons METADATA\n')
-                            fn_season = season_data['items'][0]['season']
-                            sub_dir = '%s (%s)\\Season %s' % (fn_serie.strip(), fn_year, fn_season)
-                            out_sub_dir = os.path.join(out_dir, sub_dir)
-                            
-                            print('[Season %s]' % (season_data['items'][0]['season']))
-                            
-                            episodes = []
-                            for episode in range(len(season_data['items'])):
-                                if not season_data['items'][episode]['episode'] == '':
-                                    episodes.append(season_data['items'][episode]['episode'])
-                                else:
-                                    episodes.append(episode+1)
-                            
-                            if def_episodes[0] != 'all':
-                                if debug:
-                                    print('\n[debug] Getting SELECTED EPISODES')
-                                    print('[debug] ' + str(def_episodes))
-                                    
-                                for def_episode in def_episodes:
-                                    for episode in range(len(episodes)):
-                                        if def_episode == episodes[episode]:
-                                            
-                                            if debug: print('[debug] Defining episode METADATA')
-                                            fn_episode = season_data['items'][episode]['episode']
-                                            fn_episode_title = season_data['items'][episode]['episode_title']
-                                            url = get_override_url(get_json(url_root + season_data['items'][episode]['weblink']), format)
-                                            definition = get_definition(url[url.find('-') + 1:])
-                                            file_name = '%s - %sx%s - %s [%s].mp4' % (fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
-                                            
-                                            path_and_down(url, out_sub_dir, file_name)
-                            else:   
-                                if debug:
-                                    print('\n[debug] Getting ALL EPISODES')
-                                    print('[debug] ' + str(episodes))
-                                
-                                for episode in range(len(episodes)):
+                if debug: print('[debug] Getting custom SEASONS')
+                if def_seasons[0] != 'all':
+                    temp = []
+                    for i in def_seasons:
+                        temp.append(seasons[int(i) - 1])
+                    seasons = temp
+
+                for sor_season in seasons:
+                    season_data = get_json(url_root + sor_season.split('_SEP_')[1])
+
+                    if debug: print('[debug] Defining seasons METADATA\n')
+                    fn_season = season_data['items'][0]['season']
+                    sub_dir = '%s (%s)\\Season %s' % (fn_serie.strip(), fn_year, fn_season)
+                    out_sub_dir = os.path.join(out_dir, sub_dir)
+
+                    print('[Season %s]' % (season_data['items'][0]['season']))
+
+                    episodes = []
+                    for episode in range(len(season_data['items'])):
+                        if not season_data['items'][episode]['episode'] == '':
+                            episodes.append(season_data['items'][episode]['episode'])
+                        else:
+                            episodes.append(episode + 1)
+
+                    if def_episodes[0] != 'all':
+                        if debug:
+                            print('\n[debug] Getting SELECTED EPISODES')
+                            print('[debug] ' + str(def_episodes))
+
+                        for def_episode in def_episodes:
+                            for episode in range(len(episodes)):
+                                if def_episode == episodes[episode]:
+
+                                    if debug: print('[debug] Defining episode METADATA')
                                     fn_episode = season_data['items'][episode]['episode']
                                     fn_episode_title = season_data['items'][episode]['episode_title']
-                                    url = get_override_url(get_json(url_root + season_data['items'][episode]['weblink']), format)
-                                    definition = get_definition(url[url.find('-') + 1:])
-                                    file_name = '%s - %sx%s - %s [%s].mp4' % (fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
-                                    
-                                    path_and_down(url, out_sub_dir, file_name)
-                            print()
+                                    url = get_override_url(
+                                        get_json(url_root + season_data['items'][episode]['weblink']), format)
+                                    if url:
+                                        definition = get_definition(url[url.find('-') + 1:])
+                                        file_name = '%s - %sx%s - %s [%s].mp4' % (
+                                        fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(),
+                                        definition)
 
-def list_formats(data): # List the formats
+                                        path_and_down(url, out_sub_dir, file_name)
+                    else:
+                        if debug:
+                            print('\n[debug] Getting ALL EPISODES')
+                            print('[debug] ' + str(episodes))
+
+                        for episode in range(len(episodes)):
+                            fn_episode = season_data['items'][episode]['episode']
+                            fn_episode_title = season_data['items'][episode]['episode_title']
+                            url = get_override_url(get_json(url_root + season_data['items'][episode]['weblink']),
+                                                   format)
+                            if url:
+                                definition = get_definition(url[url.find('-') + 1:])
+                                file_name = '%s - %sx%s - %s [%s].mp4' % (
+                                fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
+
+                                path_and_down(url, out_sub_dir, file_name)
+                    print()
+
+
+def list_formats(data):  # List the formats
     try:
         if 'Page' in data['id']:
             data = get_json(url_root + data['first_item_path'])
-            
+
         if debug: print('[debug] Listing FORMATS\n')
 
         title = data['program_info']['name']
@@ -290,11 +314,13 @@ def list_formats(data): # List the formats
             url_override = url + override + formats[format]
             r = requests.get(url_override, stream=True)
             if r.headers['Content-Type'] == 'video/mp4':
-                print('%s - %s (%s)' % (formats[format], resolutions[format], convert_size(int(r.headers['Content-Length']))))
+                print('%s - %s (%s)' % (
+                formats[format], resolutions[format], convert_size(int(r.headers['Content-Length']))))
     except KeyboardInterrupt:
         sys.exit('\n[info] Format listing interrupted')
 
-def list_formats_serie(data, def_seasons, def_episodes): # List the formats
+
+def list_formats_serie(data, def_seasons, def_episodes):  # List the formats
     if debug: print('[debug] Listing FORMATS SERIE\n')
     try:
         if 'ContentItem' in data['id']:
@@ -304,97 +330,103 @@ def list_formats_serie(data, def_seasons, def_episodes): # List the formats
             episode_title = data['episode_title']
             year = data['track_info']['edit_year']
             url = data['video']['content_url']
-            
-            print('Formats avaiable for "%s - %sx%s - %s (%s)"' % (serie.strip(), season.zfill(2), episode.zfill(2), episode_title.strip(), year))
-            
+
+            print('Formats avaiable for "%s - %sx%s - %s (%s)"' % (
+            serie.strip(), season.zfill(2), episode.zfill(2), episode_title.strip(), year))
+
             for format in range(len(formats)):
                 override_url = url + override + formats[format]
                 r = requests.get(override_url, stream=True)
                 if r.headers['Content-Type'] == 'video/mp4':
-                    print('%s - %s (%s)' % (formats[format], resolutions[format], convert_size(int(r.headers['Content-Length']))))
+                    print('%s - %s (%s)' % (
+                    formats[format], resolutions[format], convert_size(int(r.headers['Content-Length']))))
         elif 'Page' in data['id']:
             def_seasons = [x.strip() for x in def_seasons.split(',')]
             def_episodes = [x.strip() for x in def_episodes.split(',')]
-            
+
             fn_serie = data['name']
             fn_year = data['program_info']['year']
-            
+
             print('Formats avaiable for "%s (%s)"\n' % (fn_serie.strip(), fn_year))
             if debug: print('[debug] Getting SEASONS')
             for block in range(len(data['blocks'])):
                 if 'Episodi' == data['blocks'][block]['name'] or 'Puntate' == data['blocks'][block]['name']:
-                            seasons = []
-                            if debug: print('[debug] Sorting SEASONS')
-                            # This function stores the season name and the rispective json path
-                            # in one array, separated by a custom word, then natsort the season
-                            # for a better output in the console (it was to difficult to organize things for RAI)
-                            for season in range(len(data['blocks'][block]['sets'])):
-                                seasons.append(data['blocks'][block]['sets'][season]['name'] + '_SEP_' + data['blocks'][block]['sets'][season]['path_id'])
-                            seasons = natsorted(seasons, alg=ns.IGNORECASE)
+                    seasons = []
+                    if debug: print('[debug] Sorting SEASONS')
+                    # This function stores the season name and the rispective json path
+                    # in one array, separated by a custom word, then natsort the season
+                    # for a better output in the console (it was to difficult to organize things for RAI)
+                    for season in range(len(data['blocks'][block]['sets'])):
+                        seasons.append(data['blocks'][block]['sets'][season]['name'] + '_SEP_' +
+                                       data['blocks'][block]['sets'][season]['path_id'])
+                    seasons = natsorted(seasons, alg=ns.IGNORECASE)
 
-                            if def_seasons[0] != 'all':
-                                if debug: print('[debug] Getting custom SEASONS')
-                                temp = []
-                                for i in def_seasons:
-                                    temp.append(seasons[int(i)-1])
-                                seasons = temp
-                            
-                            for sor_season in seasons:
-                                season_data = get_json(url_root + sor_season.split('_SEP_')[1])
-                                
-                                if debug: print()
-                                print('[Season %s]' % (season_data['items'][0]['season']))
-                                
-                                episodes = []
-                                for episode in range(len(season_data['items'])):
-                                    if not season_data['items'][episode]['episode'] == '':
-                                        episodes.append(season_data['items'][episode]['episode'])
-                                    else:
-                                        episodes.append(episode+1)
-                                
-                                if def_episodes[0] != 'all':
-                                    if debug:
-                                        print('\n[debug] Getting SELECTED EPISODES')
-                                        print('[debug] ' + str(def_episodes))
-                                        print()
-                                        
-                                    for def_episode in def_episodes:
-                                        for episode in range(len(episodes)):
-                                            if def_episode == episodes[episode]:
-                                                fn_episode = season_data['items'][episode]['episode']
-                                                fn_episode_title = season_data['items'][episode]['episode_title']
-                                                
-                                                print('Ep %s - "%s"' % (fn_episode, fn_episode_title.strip()))
-                                                url = season_data['items'][episode]['video_url']
-                                                for format in range(len(formats)):
-                                                    override_url = url + override + formats[format]
-                                                    r = requests.get(override_url, stream=True)
-                                                    if r.headers['Content-Type'] == 'video/mp4':
-                                                        print('%s - %s (%s)' % (formats[format], resolutions[format], convert_size(int(r.headers['Content-Length']))))
-                                                print()
-                                        
-                                else:   
-                                    if debug:
-                                        print('\n[debug] Getting ALL EPISODES')
-                                        print('[debug] ' + str(episodes))
-                                        print()
-                                    
-                                    for episode in range(len(episodes)):
+                    if def_seasons[0] != 'all':
+                        if debug: print('[debug] Getting custom SEASONS')
+                        temp = []
+                        for i in def_seasons:
+                            temp.append(seasons[int(i) - 1])
+                        seasons = temp
+
+                    for sor_season in seasons:
+                        season_data = get_json(url_root + sor_season.split('_SEP_')[1])
+
+                        if debug: print()
+                        print('[Season %s]' % (season_data['items'][0]['season']))
+
+                        episodes = []
+                        for episode in range(len(season_data['items'])):
+                            if not season_data['items'][episode]['episode'] == '':
+                                episodes.append(season_data['items'][episode]['episode'])
+                            else:
+                                episodes.append(episode + 1)
+
+                        if def_episodes[0] != 'all':
+                            if debug:
+                                print('\n[debug] Getting SELECTED EPISODES')
+                                print('[debug] ' + str(def_episodes))
+                                print()
+
+                            for def_episode in def_episodes:
+                                for episode in range(len(episodes)):
+                                    if def_episode == episodes[episode]:
                                         fn_episode = season_data['items'][episode]['episode']
                                         fn_episode_title = season_data['items'][episode]['episode_title']
-                                        
+
                                         print('Ep %s - "%s"' % (fn_episode, fn_episode_title.strip()))
                                         url = season_data['items'][episode]['video_url']
                                         for format in range(len(formats)):
                                             override_url = url + override + formats[format]
                                             r = requests.get(override_url, stream=True)
                                             if r.headers['Content-Type'] == 'video/mp4':
-                                                print('%s - %s (%s)' % (formats[format], resolutions[format], convert_size(int(r.headers['Content-Length']))))
+                                                print('%s - %s (%s)' % (formats[format], resolutions[format],
+                                                                        convert_size(int(r.headers['Content-Length']))))
                                         print()
+
+                        else:
+                            if debug:
+                                print('\n[debug] Getting ALL EPISODES')
+                                print('[debug] ' + str(episodes))
+                                print()
+
+                            for episode in range(len(episodes)):
+                                fn_episode = season_data['items'][episode]['episode']
+                                fn_episode_title = season_data['items'][episode]['episode_title']
+
+                                print('Ep %s - "%s"' % (fn_episode, fn_episode_title.strip()))
+                                url = season_data['items'][episode]['video_url']
+                                for format in range(len(formats)):
+                                    override_url = url + override + formats[format]
+                                    r = requests.get(override_url, stream=True)
+                                    if r.headers['Content-Type'] == 'video/mp4':
+                                        print('%s - %s (%s)' % (formats[format], resolutions[format],
+                                                                convert_size(int(r.headers['Content-Length']))))
+                                print()
     except KeyboardInterrupt:
         sys.exit('\n[info] Format listing interrupted')
-        
-def download(url, file_path): # yeah this pretty much download
+
+
+def download(url, file_path):  # yeah this pretty much download
     if debug: print('\n[debug] Starting DOWNLOAD')
     try:
         with open(file_path, 'wb') as f:
@@ -411,20 +443,24 @@ def download(url, file_path): # yeah this pretty much download
                     f.write(data)
                     done = int(50 * dl / total_length)
                     percent = int(100 * dl / total_length)
-                    sys.stdout.write('\r[%s%s] %s%% of %s' % ('#' * done, ' ' * (50 - done), percent, convert_size(int(total_length))))
+                    sys.stdout.write('\r[%s%s] %s%% of %s' % (
+                    '#' * done, ' ' * (50 - done), percent, convert_size(int(total_length))))
                     sys.stdout.flush()
                 print()
     except KeyboardInterrupt:
         os.remove(file_path)
         sys.exit('\n\n[info] Download canceled')
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='raiplay-dl', description='Downloader for RaiPlay')
     parser.add_argument('url', metavar='URL', help='Content URL')
     parser.add_argument('-f', '--format', metavar='FORMAT', dest='format', default='best', help='Video format code')
-    parser.add_argument('-F', '--list-formats', dest='list_formats', help='List all available formats', action='store_true')
+    parser.add_argument('-F', '--list-formats', dest='list_formats', help='List all available formats',
+                        action='store_true')
     parser.add_argument('-s', '--season', metavar='SEASON', dest='seasons', default='all', help='Season')
     parser.add_argument('-e', '--episode', metavar='EPISODE', dest='episodes', default='all', help='Episode')
-    parser.add_argument('-o', '--output', metavar='PATH', dest='out_dir', default=str(pathlib.Path(__file__).parent.resolve()), help='Set the output directory')
+    parser.add_argument('-o', '--output', metavar='PATH', dest='out_dir',
+                        default=str(pathlib.Path(__file__).parent.resolve()), help='Set the output directory')
     args = parser.parse_args()
     main(args)
