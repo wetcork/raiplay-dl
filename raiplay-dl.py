@@ -1,5 +1,5 @@
 # Created by WetCork
-# Version 1.0.1 - August 2022
+# Version 1.0.2 - September 2022
 # https://github.com/wetcork/raiplay-dl
 
 import argparse
@@ -16,10 +16,10 @@ from natsort import natsorted,ns
 debug = False # Print debug output in the console
 url_root = 'https://www.raiplay.it'
 override = '&overrideUserAgentRule=mp4-'
-formats = ['5000', '3200', '2401', '2400', '1800', '1200', '800', '700', '400', '250']
-resolutions = ['1080p', '810p', '720p', '720p', '576p', '414p', '288p', '288p', '288p', '198p']
+formats = ['5000', '3200', '2401', '2400', '1800', '1200', '0', '800', '700', '400', '250']
+resolutions = ['1080p', '810p', '720p', '720p', '576p', '414p', '396p','288p', '288p', '288p', '198p']
 
-# GLOBAL SETTINGS #
+# END GLOBAL SETTINGS #
 
 def main(args):
     if check_url(args.url):
@@ -36,7 +36,7 @@ def main(args):
             else:
                 pre_download(data, args.format, args.out_dir)
 
-def check_url(url): # Checf in giver url is valid
+def check_url(url): # Check if given url is valid
     if debug: print('[debug] Checking URL')
     
     if url_root in url:
@@ -88,7 +88,7 @@ def is_serie(data): # Check if the media is a tv serie or a movie
     else:
         sys.exit('Error while defining serie.')
 
-def get_override_url(data, format): # Contruct the video url to bypass 720p limit
+def get_override_url(data, format): # Generate the mp4 video url
     if debug:
         print('[debug] Getting OVERRIDE URL')
         print('[debug] ' + format)
@@ -176,10 +176,11 @@ def pre_download(data, format, out_dir): # Get all the infos to start the downlo
     title = data['program_info']['name']
     year = data['program_info']['year']
     url = get_override_url(data, format)
-    definition = get_definition(url[url.find('-') + 1:])
-    file_name = '%s (%s) [%s].mp4' % (title.strip(), year, definition)
-    
-    path_and_down(url, out_dir, file_name)
+
+    if url: # Thanks to drego85
+        definition = get_definition(url[url.find('-') + 1:])
+        file_name = '%s (%s) [%s].mp4' % (title.strip(), year, definition)
+        path_and_down(url, out_dir, file_name)
 
 def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get all the infos to start the download
     if debug: print('[debug] Starting PRE-DOWNLOAD SERIE\n')
@@ -193,10 +194,11 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
         episode_title = data['episode_title']
         year = data['track_info']['edit_year']
         url = get_override_url(data, format)
-        definition = get_definition(url[url.find('-') + 1:])
-        file_name = '%s - %sx%s - %s (%s) [%s].mp4' % (serie, season.zfill(2), episode.zfill(2), episode_title.strip(), year, definition)
-        
-        path_and_down(url, out_dir, file_name)
+
+        if url: # Thanks to drego85
+            definition = get_definition(url[url.find('-') + 1:])
+            file_name = '%s - %sx%s - %s (%s) [%s].mp4' % (serie, season.zfill(2), episode.zfill(2), episode_title.strip(), year, definition)
+            path_and_down(url, out_dir, file_name)
     elif 'Page' in data['id']:
         def_seasons = [x.strip() for x in def_seasons.split(',')]
         def_episodes = [x.strip() for x in def_episodes.split(',')]
@@ -254,10 +256,11 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
                                             fn_episode = season_data['items'][episode]['episode']
                                             fn_episode_title = season_data['items'][episode]['episode_title']
                                             url = get_override_url(get_json(url_root + season_data['items'][episode]['weblink']), format)
-                                            definition = get_definition(url[url.find('-') + 1:])
-                                            file_name = '%s - %sx%s - %s [%s].mp4' % (fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
-                                            
-                                            path_and_down(url, out_sub_dir, file_name)
+
+                                            if url: # Thanks to drego85
+                                                definition = get_definition(url[url.find('-') + 1:])
+                                                file_name = '%s - %sx%s - %s [%s].mp4' % (fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
+                                                path_and_down(url, out_sub_dir, file_name)
                             else:   
                                 if debug:
                                     print('\n[debug] Getting ALL EPISODES')
@@ -267,10 +270,11 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
                                     fn_episode = season_data['items'][episode]['episode']
                                     fn_episode_title = season_data['items'][episode]['episode_title']
                                     url = get_override_url(get_json(url_root + season_data['items'][episode]['weblink']), format)
-                                    definition = get_definition(url[url.find('-') + 1:])
-                                    file_name = '%s - %sx%s - %s [%s].mp4' % (fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
-                                    
-                                    path_and_down(url, out_sub_dir, file_name)
+
+                                    if url: # Thanks to drego85
+                                        definition = get_definition(url[url.find('-') + 1:])
+                                        file_name = '%s - %sx%s - %s [%s].mp4' % (fn_serie, fn_season.zfill(2), fn_episode.zfill(2), fn_episode_title.strip(), definition)
+                                        path_and_down(url, out_sub_dir, file_name)
                             print()
 
 def list_formats(data): # List the formats
