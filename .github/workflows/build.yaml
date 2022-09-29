@@ -37,6 +37,7 @@ jobs:
       - name: Build with pyinstaller
         run: pyinstaller --onefile --name=app-${{ matrix.os }} raiplay-dl.py
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: New release of app-${{ matrix.os }}
+      - name: Commit to the repository
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: New release of app-${{ matrix.os }}
