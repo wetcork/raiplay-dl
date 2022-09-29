@@ -37,9 +37,6 @@ jobs:
       - name: Build with pyinstaller
         run: pyinstaller --onefile --name=app-${{ matrix.os }} raiplay-dl.py
 
-      - name: Deploy artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: app-${{ matrix.os }}
-          path: releases/app-${{ matrix.os }}*
-          if-no-files-found: error
+      - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: New release of app-${{ matrix.os }}
