@@ -13,7 +13,12 @@ raiplay-dl - the most advanced raiplay.it downloader
 
 ## Installation
 
-`pip install -r requirements.txt`
+### Releases
+Executables for Windows, MacOS and Linux are available in the release folder.  
+They work as standalone executables and can be used by calling them on the terminal or command line.
+
+### By cloning the code
+Download or clone the repository, then run `pip install -r requirements.txt` and you are set to go.
 
 ## Description
 
