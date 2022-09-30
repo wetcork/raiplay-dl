@@ -3,6 +3,8 @@
 raiplay-dl - the most advanced raiplay.it downloader
 
 - [Installation](#installation)
+  - [Releases](#releases)
+  - [By cloning the code](#by-cloning-the-code)
 - [Description](#description)
 - [Features](#features)
 - [Usage](#usage)
@@ -14,8 +16,10 @@ raiplay-dl - the most advanced raiplay.it downloader
 ## Installation
 
 ### Releases
-Executables for Windows, MacOS and Linux are available in the release folder.  
-They work as standalone executables and can be used by calling them on the terminal or command line.
+Executables for Windows, MacOS and Linux are available in the [dist](https://github.com/wetcork/raiplay-dl/blob/main/dist/) folder.  
+They work as standalone executables, they don't need Python or external libraries to be installed on the system and can be used by simply calling them on the terminal or command line.  
+Keep in mind that you should run the terminal **in the same folder** as the executable and recall it with the same name as the file (for example in Windows you should call `raiplay-windows-latest.exe`), followed by the parameters as in the [Usage](#usage) section of this README.  
+If you want to call the executables in the terminal from any folder, you should add the executable to the PATH of your system (this step is a bit different depending on your OS).
 
 ### By cloning the code
 Download or clone the repository, then run `pip install -r requirements.txt` and you are set to go.
