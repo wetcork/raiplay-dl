@@ -1,3 +1,5 @@
+![builds status](https://github.com/wetcork/raiplay-dl/actions/workflows/build.yaml/badge.svg)
+
 # raiplay-dl
 
 raiplay-dl - the most advanced raiplay.it downloader
