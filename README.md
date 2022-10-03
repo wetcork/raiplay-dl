@@ -4,7 +4,7 @@ raiplay-dl - the most advanced raiplay.it downloader
 
 - [Installation](#installation)
   - [Binaries](#binaries)
-  - [By cloning the code](#by-cloning-the-code)
+  - [Cloning the code](#cloning-the-code)
 - [Description](#description)
 - [Features](#features)
 - [Usage](#usage)
