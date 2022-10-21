@@ -208,7 +208,8 @@ def pre_download_serie(data, def_seasons, def_episodes, format, out_dir): # Get 
         print('Downloading "%s (%s)"\n' % (fn_serie.strip(), fn_year))
         
         for block in range(len(data['blocks'])):
-            if 'Episodi' == data['blocks'][block]['name'] or 'Puntate' == data['blocks'][block]['name']:
+            blocks_name = data['blocks'][block]['name'].strip()
+            if 'Episodi' == blocks_name or 'Puntate' == blocks_name or 'Lingua italiana' == blocks_name:
                         seasons = []
 
                         if debug: print('[debug] Sorting SEASONS')
